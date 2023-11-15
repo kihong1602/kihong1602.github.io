@@ -1,1 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-11-15T17:41:46+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Kyong’s Develog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>KiHong</name></author></feed>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-11-15T22:48:42+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Kyong’s Develog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>KiHong</name></author><entry><title type="html">첫번째 포스팅!</title><link href="http://localhost:4000/daily/2023/11/15/first-post.html" rel="alternate" type="text/html" title="첫번째 포스팅!" /><published>2023-11-15T00:00:00+09:00</published><updated>2023-11-15T00:00:00+09:00</updated><id>http://localhost:4000/daily/2023/11/15/first-post</id><content type="html" xml:base="http://localhost:4000/daily/2023/11/15/first-post.html">&lt;p&gt;&lt;a href=&quot;#첫번째-포스팅은-무엇을-작성해야-할까&quot;&gt;1. 첫번째 포스팅은 무엇을 작성해야 할까?&lt;/a&gt;
+&lt;a href=&quot;#해야할일-&quot;&gt;2. 해야할 일&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;첫번째-포스팅은-무엇을-작성해야-할까&quot;&gt;첫번째 포스팅은 무엇을 작성해야 할까?&lt;/h2&gt;
+
+&lt;p&gt;지금까지 개발공부를 하면서, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;notion&lt;/code&gt;에 공부내용을 정리했지만, 초기에 정리한 내용들은 너무 부실하기도 하고, 분류가 제대로 되어있지 않았다.
+&lt;br /&gt;&lt;br /&gt;
+따라서 이번에 블로그를 만들면서, 이곳에 공부한 내용을 정리하고, 추가로 프로젝트를 진행하며 생긴 문제들이나 알게된 것들을 작성할 예정이다.&lt;/p&gt;
+
+&lt;hr /&gt;
+&lt;h2 id=&quot;해야할일&quot;&gt;해야할일&lt;/h2&gt;
+&lt;ul class=&quot;task-list&quot;&gt;
+  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;CS 공부내용 정리&lt;/li&gt;
+  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;세미프로젝트 정리&lt;/li&gt;
+  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;토이프로젝트 기획, 설계 작성&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Kyong</name></author><category term="Daily" /><category term="Daily" /><summary type="html">1. 첫번째 포스팅은 무엇을 작성해야 할까? 2. 해야할 일</summary></entry></feed>

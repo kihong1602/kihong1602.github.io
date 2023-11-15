@@ -141,7 +141,7 @@ yat:
 # it will be always kept on every visit (i.e. no matter
 # the browser is closed or not)
 #
-night_mode: "auto"
+#night_mode: "auto"
 
 # Code badge setting
 # You can enable or disable the code badge and so on
@@ -165,7 +165,7 @@ defaults:
   home:
     heading: "Hello"
     subheading: "Blog"
-    banner: "/assets/images/background/forest.jpg"
+    banner: "/assets/images/banners/rainbow.jpg"
 
 
 # Page default value
