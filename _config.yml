@@ -25,7 +25,7 @@
 # in the templates via {{ site.myvariable }}.
 # theme: owner/name --> Don't forget to remove/comment the gem-based theme option
 remote_theme: "jeffreytse/jekyll-theme-yat"
-title: Kyong's Develog
+title: Kyong's Devlog
 email: signstar4517@gmail.com
 author: KiHong
 
@@ -163,8 +163,8 @@ yat:
 # Page default value
 defaults:
   home:
-    heading: "Hello"
-    subheading: "Blog"
+    heading: "Blanc의 개발 기록 블로그"
+    subheading: "Rom 8 : 18"
     banner: "/assets/images/banners/rainbow.jpg"
 
 

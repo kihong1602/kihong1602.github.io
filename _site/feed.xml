@@ -1,16 +1,173 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-11-15T22:48:42+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Kyong’s Develog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>KiHong</name></author><entry><title type="html">첫번째 포스팅!</title><link href="http://localhost:4000/daily/2023/11/15/first-post.html" rel="alternate" type="text/html" title="첫번째 포스팅!" /><published>2023-11-15T00:00:00+09:00</published><updated>2023-11-15T00:00:00+09:00</updated><id>http://localhost:4000/daily/2023/11/15/first-post</id><content type="html" xml:base="http://localhost:4000/daily/2023/11/15/first-post.html">&lt;p&gt;&lt;a href=&quot;#첫번째-포스팅은-무엇을-작성해야-할까&quot;&gt;1. 첫번째 포스팅은 무엇을 작성해야 할까?&lt;/a&gt;
-&lt;a href=&quot;#해야할일-&quot;&gt;2. 해야할 일&lt;/a&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-02-06T08:39:06+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Kyong’s Devlog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>KiHong</name></author><entry><title type="html">ModelAttribute의 바인딩 과정</title><link href="http://localhost:4000/spring/2024/02/05/model-attribute.html" rel="alternate" type="text/html" title="ModelAttribute의 바인딩 과정" /><published>2024-02-05T23:11:23+09:00</published><updated>2024-02-05T23:11:23+09:00</updated><id>http://localhost:4000/spring/2024/02/05/model-attribute</id><content type="html" xml:base="http://localhost:4000/spring/2024/02/05/model-attribute.html">&lt;h2 id=&quot;modelattribute은-어떻게-요청데이터를-바인딩할까&quot;&gt;@ModelAttribute은 어떻게 요청데이터를 바인딩할까?&lt;/h2&gt;
+
+&lt;p&gt;클라이언트에서 전달되는 Request 데이터를 객체에 바인딩해주는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ModelAttribute&lt;/code&gt;를 사용하는 중, 값이 바인딩이 되지 않아 null로 입력되는 현상이 발생하였습니다.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;java.lang.IllegalStateException: Cannot resolve parameter names for constructor private
+org.example.blancstudy.controller.request.
+Review(java.lang.String,java.lang.String)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;1-문제상황&quot;&gt;1. 문제상황&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Springboot 3.2.1로 프로젝트를 진행하였습니다.&lt;/li&gt;
+  &lt;li&gt;빌드 방식은 IntelliJ IDEA 방식을 사용하였습니다.&lt;/li&gt;
+  &lt;li&gt;멘토링에 대한 리뷰를 수정할때, POST method로 받는 데이터는 다음과 같습니다.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;id&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;contents&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ratings&lt;/code&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ModelAttribute&lt;/code&gt;로 바인딩하기 위한 객체의 구조는 다음과 같습니다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt; @Getter
+ public class RequiredEditReview{
+    
+    private Long id;
+    
+    @NotBlank(message= &quot;상세내용을 입력해주세요.&quot;)
+    @Size(min = 1, max = 200, message = &quot;1자 이상 200자 이하로 작성해 주세요.&quot;)
+    private String contents;
+    
+    private Integer ratings;
+    
+    @Builder
+    private RequiredEditReview(Long id, String contents, Integer ratings){
+        this.id = id;
+        this.contents = contents;
+        this.ratings = ratings;   
+    }
+
+ }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+  &lt;li&gt;form POST 요청을 받는 Controller의 메서드는 다음과 같습니다.
+    &lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt;@PostMapping(&quot;/me/review/edit&quot;)
+public String editReview(@Validated @ModelAttribute RequiredEditReview requiredEditReview,
+    BindingResult bindingResult, Model model) {
+  if (bindingResult.hasErrors()) {
+    model.addAttribute(&quot;requiredEditReview&quot;, requiredEditReview);
+    return viewResolver.getViewPath(&quot;user&quot;, &quot;edit-review&quot;);
+  }
+  userService.editReview(requiredEditReview);
+  return &quot;redirect:/users/me/applied-mentorings&quot;;
+}
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;editReview&lt;/code&gt; 메서드의 파라미터로 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RequiredEditReview&lt;/code&gt; 객체에 값이 제대로 바인딩 되지 않는 상황이 발생하였습니다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;2-문제분석&quot;&gt;2. 문제분석&lt;/h4&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ModelAttribute&lt;/code&gt;에 대해 Spring 공식문서에서는 다음과 같이 설명하고 있습니다.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Instantiated through a default constructor.&lt;/li&gt;
+    &lt;li&gt;Instantiated through a “primary constructor” with arguments that match to Servlet request parameters. Argument names are determined through runtime-retained parameter names in the bytecode.&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ModelAttribute&lt;/code&gt;는 기본 생성자를 통해 인스턴스화됩니다.&lt;/p&gt;
+
+&lt;p&gt;서블릿 요청 매개변수와 일치하는 인수를 사용하여 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;primary constructor&lt;/code&gt;를 통해 인스턴스화됩니다. 인수 이름은 바이트코드의 런타임 유지 매개변수 이름을 통해 결정됩니다.&lt;/p&gt;
+
+&lt;p&gt;즉, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ModelAttribute&lt;/code&gt;에 Request 데이터를 바인딩 하기위해서는 기본생성자와 setter 메서드를 통해 객체를 생성한 후 바인딩하거나,
+Request Parameter와 일치하는 생성자를 찾아서 사용하게 됩니다.&lt;/p&gt;
+
+&lt;p&gt;하지만 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RequiredEditReview&lt;/code&gt;에는 왜 데이터가 바인딩되지 않은걸까요? 문제해결을 위해 저는 ModelAttribute의 바인딩 과정을 담당하는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ModelAttributeMethodProcessor&lt;/code&gt;를 디버깅 하였습니다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/post/modelattribute/modelAttribute.png&quot; alt=&quot;model-attribute&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;우선, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resolveArgument&lt;/code&gt; 메서드에서 출발하고, 내부에서 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;constructAttribute&lt;/code&gt;를 호출합니다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/post/modelattribute/modelAttribute2.png&quot; alt=&quot;model-attribute-2&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/post/modelattribute/modelAttribute3.png&quot; alt=&quot;model-attribute-3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WebRequestDataBinder&lt;/code&gt;의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;construct&lt;/code&gt;는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ValueResolver&lt;/code&gt;를 매개변수로 갖는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;construct&lt;/code&gt;를 호출합니다.
+&lt;img src=&quot;/assets/images/post/modelattribute/requestDataBinder.png&quot; alt=&quot;request-data-binder&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DataBinder&lt;/code&gt;의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;construct&lt;/code&gt;는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;createObject&lt;/code&gt;를 통해 객체를 생성하게됩니다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/post/modelattribute/construct.png&quot; alt=&quot;constructor&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;createObject&lt;/code&gt;에서 객체를 생성하는데, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BeanUtils.getResolvableConstructor&lt;/code&gt;를 호출해 생성자를 조회합니다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/post/modelattribute/createObject.png&quot; alt=&quot;create-object&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;조회 순서는 다음과 같습니다.&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;findPrimaryConstructor(clazz)를 호출하여 주요 생성자(primary constructor)를 찾습니다.
+    &lt;ul&gt;
+      &lt;li&gt;해당 메서드는 kotlin 전용이므로, 현재는 신경쓰지 않습니다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;클래스의 모든 생성자 배열을 얻습니다.&lt;/li&gt;
+  &lt;li&gt;생성자가 하나라면, 해당 생성자를 반환합니다.&lt;/li&gt;
+  &lt;li&gt;명시된 생성자가 없다면 기본생성자를 반환합니다.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;생성자를 조회한 다음엔 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BeanUtils.getParameterNames&lt;/code&gt;를 호출해 생성자 파라미터 이름을 배열로 반환받아야합니다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/post/modelattribute/getParameterNames.png&quot; alt=&quot;getParameterNames&quot; /&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;생성자에 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ConstructorProperties&lt;/code&gt; 어노테이션이 붙어있는지 조회합니다.&lt;/li&gt;
+  &lt;li&gt;존재하지 않는다면, 생성자의 파라미터 명을 조회합니다.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2번&lt;/code&gt; 상황에서 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;paramNames == null&lt;/code&gt; 이 되어 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IllegalStateException&lt;/code&gt;이 발생한 것입니다.&lt;/p&gt;
+
+&lt;p&gt;그렇다면 해결방법은 무엇이 존재할까요?&lt;/p&gt;
+
+&lt;h4 id=&quot;3-문제해결&quot;&gt;3. 문제해결&lt;/h4&gt;
+&lt;h5 id=&quot;기본생성자와-setter-메서드&quot;&gt;기본생성자와 setter 메서드&lt;/h5&gt;
+&lt;p&gt;가장 기본적으로, 기본생성자와 setter 메서드를 사용해 값을 바인딩해줄 수 있습니다.
+하지만 Request 데이터를 바인딩 하는 Dto 객체는 데이터의 불변성을 유지해야하기때문에, setter 메서드를 사용한 바인딩은 올바르지 못한 방법이라고 생각하였습니다.&lt;/p&gt;
+
+&lt;h5 id=&quot;constructorproperties&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ConstructorProperties&lt;/code&gt;&lt;/h5&gt;
+&lt;p&gt;두번째 방법으로는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BeanUtils.getParameterNames&lt;/code&gt;의 첫번째 줄에서 검증하는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ConstructorProperties&lt;/code&gt;를 사용하는 것입니다.
+해당 어노테이션은 생성자 파라미터와 프로퍼티 간의 명시적인 매핑을 제공합니다.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt; @Getter
+ public class RequiredEditReview{
+    
+    private Long id;
+    
+    @NotBlank(message= &quot;상세내용을 입력해주세요.&quot;)
+    @Size(min = 1, max = 200, message = &quot;1자 이상 200자 이하로 작성해 주세요.&quot;)
+    private String contents;
+    
+    private Integer ratings;
+    
+    @Builder
+    @ConstructorProperties({&quot;id&quot;,&quot;contents&quot;,&quot;ratings&quot;})
+    private RequiredEditReview(Long id, String contents, Integer ratings){
+        this.id = id;
+        this.contents = contents;
+        this.ratings = ratings;   
+    }
+
+ }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;4-추가-조사&quot;&gt;4. 추가 조사&lt;/h3&gt;
+&lt;h4 id=&quot;그렇다면-왜-생성자-파라미터-이름을-조회하지-못하는가&quot;&gt;그렇다면 왜? 생성자 파라미터 이름을 조회하지 못하는가?&lt;/h4&gt;
+&lt;p&gt;Gradle로 빌드하거나 스프링부트 3.2 이하 버전에서는 데이터 바인딩이 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ConstructorProperties&lt;/code&gt;없이도 잘 이뤄진다는 사실을 확인하였습니다.&lt;/p&gt;
+
+&lt;p&gt;왜 3.2버전부터 바인딩이 되지않는가에 대한 궁금증이 생겨 검색 하던 중, 스프링 6 업데이트 노트를 찾게 되었습니다.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-6.x#parameter-name-retention&quot;&gt;Upgrading to Spring Framework 6.x&lt;/a&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;LocalVariableTableParameterNameDiscoverer has been removed in 6.1. Consequently, code within the Spring Framework and Spring portfolio frameworks no longer attempts to deduce parameter names by parsing bytecode.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;스프링 6부터는 바이트코드에서 파라미터이름을 추론하는 방식을 사용하지 않는다고 합니다.&lt;/p&gt;
+
+&lt;p&gt;Gradle로 빌드를 하게된다면 자바 컴파일러 옵션인 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-parameters&lt;/code&gt;가 활성화 되어있어서 파라미터 이름을 바이트코드에 포함시킵니다.&lt;/p&gt;
+
+&lt;p&gt;하지만 IntelliJ IDEA 빌드는 해당 옵션이 비활성화 상태이고, Spring6부터 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LocalVariableTableParameterNameDiscoverer&lt;/code&gt;가 삭제되었기 때문에 메서드 파라미터에서 이름을 추론하지 못해 발생한 문제였습니다.&lt;/p&gt;</content><author><name>Kyong</name></author><category term="Spring" /><category term="Spring" /><category term="Springboot" /><summary type="html">@ModelAttribute은 어떻게 요청데이터를 바인딩할까?</summary></entry><entry><title type="html">첫번째 포스팅!</title><link href="http://localhost:4000/daily/2023/11/15/first-post.html" rel="alternate" type="text/html" title="첫번째 포스팅!" /><published>2023-11-15T00:00:00+09:00</published><updated>2023-11-15T00:00:00+09:00</updated><id>http://localhost:4000/daily/2023/11/15/first-post</id><content type="html" xml:base="http://localhost:4000/daily/2023/11/15/first-post.html">&lt;p&gt;&lt;a href=&quot;#첫번째-포스팅은-무엇을-작성해야-할까&quot;&gt;1. 첫번째 포스팅은 무엇을 작성해야 할까?&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;첫번째-포스팅은-무엇을-작성해야-할까&quot;&gt;첫번째 포스팅은 무엇을 작성해야 할까?&lt;/h2&gt;
 
 &lt;p&gt;지금까지 개발공부를 하면서, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;notion&lt;/code&gt;에 공부내용을 정리했지만, 초기에 정리한 내용들은 너무 부실하기도 하고, 분류가 제대로 되어있지 않았다.
 &lt;br /&gt;&lt;br /&gt;
-따라서 이번에 블로그를 만들면서, 이곳에 공부한 내용을 정리하고, 추가로 프로젝트를 진행하며 생긴 문제들이나 알게된 것들을 작성할 예정이다.&lt;/p&gt;
-
-&lt;hr /&gt;
-&lt;h2 id=&quot;해야할일&quot;&gt;해야할일&lt;/h2&gt;
-&lt;ul class=&quot;task-list&quot;&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;CS 공부내용 정리&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;세미프로젝트 정리&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;토이프로젝트 기획, 설계 작성&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Kyong</name></author><category term="Daily" /><category term="Daily" /><summary type="html">1. 첫번째 포스팅은 무엇을 작성해야 할까? 2. 해야할 일</summary></entry></feed>
+따라서 이번에 블로그를 만들면서, 이곳에 공부한 내용을 정리하고, 추가로 프로젝트를 진행하며 생긴 문제들이나 알게된 것들을 작성할 예정이다.&lt;/p&gt;</content><author><name>Kyong</name></author><category term="Daily" /><category term="Daily" /><summary type="html">1. 첫번째 포스팅은 무엇을 작성해야 할까?</summary></entry></feed>
