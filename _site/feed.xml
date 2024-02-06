@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-02-06T08:39:06+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Kyong’s Devlog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>KiHong</name></author><entry><title type="html">ModelAttribute의 바인딩 과정</title><link href="http://localhost:4000/spring/2024/02/05/model-attribute.html" rel="alternate" type="text/html" title="ModelAttribute의 바인딩 과정" /><published>2024-02-05T23:11:23+09:00</published><updated>2024-02-05T23:11:23+09:00</updated><id>http://localhost:4000/spring/2024/02/05/model-attribute</id><content type="html" xml:base="http://localhost:4000/spring/2024/02/05/model-attribute.html">&lt;h2 id=&quot;modelattribute은-어떻게-요청데이터를-바인딩할까&quot;&gt;@ModelAttribute은 어떻게 요청데이터를 바인딩할까?&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-02-06T09:15:49+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Kyong’s Devlog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>KiHong</name></author><entry><title type="html">ModelAttribute의 바인딩 과정</title><link href="http://localhost:4000/spring/2024/02/05/model-attribute.html" rel="alternate" type="text/html" title="ModelAttribute의 바인딩 과정" /><published>2024-02-05T23:11:23+09:00</published><updated>2024-02-05T23:11:23+09:00</updated><id>http://localhost:4000/spring/2024/02/05/model-attribute</id><content type="html" xml:base="http://localhost:4000/spring/2024/02/05/model-attribute.html">&lt;h2 id=&quot;modelattribute은-어떻게-요청데이터를-바인딩할까&quot;&gt;@ModelAttribute은 어떻게 요청데이터를 바인딩할까?&lt;/h2&gt;
 
 &lt;p&gt;클라이언트에서 전달되는 Request 데이터를 객체에 바인딩해주는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ModelAttribute&lt;/code&gt;를 사용하는 중, 값이 바인딩이 되지 않아 null로 입력되는 현상이 발생하였습니다.&lt;/p&gt;
 
@@ -8,7 +8,7 @@ org.example.blancstudy.controller.request.
 Review(java.lang.String,java.lang.String)&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h4 id=&quot;1-문제상황&quot;&gt;1. 문제상황&lt;/h4&gt;
+&lt;h3 id=&quot;1-문제상황&quot;&gt;1. 문제상황&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;Springboot 3.2.1로 프로젝트를 진행하였습니다.&lt;/li&gt;
   &lt;li&gt;빌드 방식은 IntelliJ IDEA 방식을 사용하였습니다.&lt;/li&gt;
@@ -40,24 +40,24 @@ Review(java.lang.String,java.lang.String)&lt;/p&gt;
 
  }
 &lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-  &lt;li&gt;form POST 요청을 받는 Controller의 메서드는 다음과 같습니다.
-    &lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt;@PostMapping(&quot;/me/review/edit&quot;)
-public String editReview(@Validated @ModelAttribute RequiredEditReview requiredEditReview,
-    BindingResult bindingResult, Model model) {
-  if (bindingResult.hasErrors()) {
-    model.addAttribute(&quot;requiredEditReview&quot;, requiredEditReview);
-    return viewResolver.getViewPath(&quot;user&quot;, &quot;edit-review&quot;);
+&lt;p&gt;form POST 요청을 받는 Controller의 메서드는 다음과 같습니다.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt;  @PostMapping(&quot;/me/review/edit&quot;)
+  public String editReview(@Validated @ModelAttribute RequiredEditReview requiredEditReview,
+      BindingResult bindingResult, Model model) {
+    if (bindingResult.hasErrors()) {
+      model.addAttribute(&quot;requiredEditReview&quot;, requiredEditReview);
+      return viewResolver.getViewPath(&quot;user&quot;, &quot;edit-review&quot;);
+    }
+    userService.editReview(requiredEditReview);
+    return &quot;redirect:/users/me/applied-mentorings&quot;;
   }
-  userService.editReview(requiredEditReview);
-  return &quot;redirect:/users/me/applied-mentorings&quot;;
-}
 &lt;/code&gt;&lt;/pre&gt;
-  &lt;/li&gt;
+
+&lt;ul&gt;
   &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;editReview&lt;/code&gt; 메서드의 파라미터로 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RequiredEditReview&lt;/code&gt; 객체에 값이 제대로 바인딩 되지 않는 상황이 발생하였습니다.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;2-문제분석&quot;&gt;2. 문제분석&lt;/h4&gt;
+&lt;h3 id=&quot;2-문제분석&quot;&gt;2. 문제분석&lt;/h3&gt;
 &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@ModelAttribute&lt;/code&gt;에 대해 Spring 공식문서에서는 다음과 같이 설명하고 있습니다.&lt;/p&gt;
 &lt;blockquote&gt;
   &lt;ul&gt;
@@ -83,8 +83,9 @@ Request Parameter와 일치하는 생성자를 찾아서 사용하게 됩니다.
 
 &lt;p&gt;&lt;img src=&quot;/assets/images/post/modelattribute/modelAttribute3.png&quot; alt=&quot;model-attribute-3&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WebRequestDataBinder&lt;/code&gt;의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;construct&lt;/code&gt;는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ValueResolver&lt;/code&gt;를 매개변수로 갖는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;construct&lt;/code&gt;를 호출합니다.
-&lt;img src=&quot;/assets/images/post/modelattribute/requestDataBinder.png&quot; alt=&quot;request-data-binder&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WebRequestDataBinder&lt;/code&gt;의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;construct&lt;/code&gt;는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ValueResolver&lt;/code&gt;를 매개변수로 갖는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;construct&lt;/code&gt;를 호출합니다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/post/modelattribute/requestDataBinder.png&quot; alt=&quot;request-data-binder&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DataBinder&lt;/code&gt;의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;construct&lt;/code&gt;는 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;createObject&lt;/code&gt;를 통해 객체를 생성하게됩니다.&lt;/p&gt;
 
@@ -118,8 +119,8 @@ Request Parameter와 일치하는 생성자를 찾아서 사용하게 됩니다.
 
 &lt;p&gt;그렇다면 해결방법은 무엇이 존재할까요?&lt;/p&gt;
 
-&lt;h4 id=&quot;3-문제해결&quot;&gt;3. 문제해결&lt;/h4&gt;
-&lt;h5 id=&quot;기본생성자와-setter-메서드&quot;&gt;기본생성자와 setter 메서드&lt;/h5&gt;
+&lt;h3 id=&quot;3-문제해결&quot;&gt;3. 문제해결&lt;/h3&gt;
+&lt;h4 id=&quot;기본생성자와-setter-메서드&quot;&gt;기본생성자와 setter 메서드&lt;/h4&gt;
 &lt;p&gt;가장 기본적으로, 기본생성자와 setter 메서드를 사용해 값을 바인딩해줄 수 있습니다.
 하지만 Request 데이터를 바인딩 하는 Dto 객체는 데이터의 불변성을 유지해야하기때문에, setter 메서드를 사용한 바인딩은 올바르지 못한 방법이라고 생각하였습니다.&lt;/p&gt;
 

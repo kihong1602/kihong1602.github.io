@@ -25,7 +25,7 @@ sidebar: []
 > Review(java.lang.String,java.lang.String)
 
 
-#### 1. 문제상황
+### 1. 문제상황
 - Springboot 3.2.1로 프로젝트를 진행하였습니다.
 - 빌드 방식은 IntelliJ IDEA 방식을 사용하였습니다.
 - 멘토링에 대한 리뷰를 수정할때, POST method로 받는 데이터는 다음과 같습니다.
@@ -53,7 +53,7 @@ sidebar: []
 
  }
 ```
-- form POST 요청을 받는 Controller의 메서드는 다음과 같습니다.
+form POST 요청을 받는 Controller의 메서드는 다음과 같습니다.
 ```Java
   @PostMapping("/me/review/edit")
   public String editReview(@Validated @ModelAttribute RequiredEditReview requiredEditReview,
@@ -69,7 +69,7 @@ sidebar: []
 
 - `editReview` 메서드의 파라미터로 `RequiredEditReview` 객체에 값이 제대로 바인딩 되지 않는 상황이 발생하였습니다.
 
-#### 2. 문제분석
+### 2. 문제분석
 `@ModelAttribute`에 대해 Spring 공식문서에서는 다음과 같이 설명하고 있습니다.
 > - Instantiated through a default constructor.
 > - Instantiated through a “primary constructor” with arguments that match to Servlet request parameters. Argument names are determined through runtime-retained parameter names in the bytecode.
@@ -83,15 +83,16 @@ Request Parameter와 일치하는 생성자를 찾아서 사용하게 됩니다.
 
 하지만 `RequiredEditReview`에는 왜 데이터가 바인딩되지 않은걸까요? 문제해결을 위해 저는 ModelAttribute의 바인딩 과정을 담당하는 `ModelAttributeMethodProcessor`를 디버깅 하였습니다.
 
-<img src="/assets/images/post/modelattribute/modelAttribute.png" alt="model-attribute">
+![model-attribute](/assets/images/post/modelattribute/modelAttribute.png)
 
 우선, `resolveArgument` 메서드에서 출발하고, 내부에서 `constructAttribute`를 호출합니다.
 
-<img src="/assets/images/post/modelattribute/modelAttribute2.png" alt="model-attribute-2">
+![model-attribute-2](/assets/images/post/modelattribute/modelAttribute2.png)
 
 ![model-attribute-3](/assets/images/post/modelattribute/modelAttribute3.png)
 
 `WebRequestDataBinder`의 `construct`는 `ValueResolver`를 매개변수로 갖는 `construct`를 호출합니다.
+
 ![request-data-binder](/assets/images/post/modelattribute/requestDataBinder.png)
 
 `DataBinder`의 `construct`는 `createObject`를 통해 객체를 생성하게됩니다.
@@ -104,7 +105,7 @@ Request Parameter와 일치하는 생성자를 찾아서 사용하게 됩니다.
 
 조회 순서는 다음과 같습니다.
 1. findPrimaryConstructor(clazz)를 호출하여 주요 생성자(primary constructor)를 찾습니다.
-  - 해당 메서드는 kotlin 전용이므로, 현재는 신경쓰지 않습니다.
+   - 해당 메서드는 kotlin 전용이므로, 현재는 신경쓰지 않습니다.
 2. 클래스의 모든 생성자 배열을 얻습니다.
 3. 생성자가 하나라면, 해당 생성자를 반환합니다.
 4. 명시된 생성자가 없다면 기본생성자를 반환합니다.
@@ -119,8 +120,8 @@ Request Parameter와 일치하는 생성자를 찾아서 사용하게 됩니다.
 
 그렇다면 해결방법은 무엇이 존재할까요?
 
-#### 3. 문제해결
-##### 기본생성자와 setter 메서드
+### 3. 문제해결
+#### 기본생성자와 setter 메서드
 가장 기본적으로, 기본생성자와 setter 메서드를 사용해 값을 바인딩해줄 수 있습니다.
 하지만 Request 데이터를 바인딩 하는 Dto 객체는 데이터의 불변성을 유지해야하기때문에, setter 메서드를 사용한 바인딩은 올바르지 못한 방법이라고 생각하였습니다.
 
