@@ -13,7 +13,6 @@ banner:
   heading_style: "font-size: 4.25em; font-weight: bold; text-decoration: underline"
   subheading_style: "color: gold"
 tags: Spring Springboot
-top: 1
 sidebar: []
 ---
 ## @ModelAttribute은 어떻게 요청데이터를 바인딩할까?

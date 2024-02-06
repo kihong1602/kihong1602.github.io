@@ -25,7 +25,7 @@
 # in the templates via {{ site.myvariable }}.
 # theme: owner/name --> Don't forget to remove/comment the gem-based theme option
 remote_theme: "jeffreytse/jekyll-theme-yat"
-title: Kyong's Devlog
+title: Blanc's Devlog
 email: signstar4517@gmail.com
 author: KiHong
 

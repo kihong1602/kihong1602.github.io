@@ -2,6 +2,7 @@
 layout: post
 title: 첫번째 포스팅!
 subtitle: 이 블로그엔 어떤 글이 올라갈 것인가..?
+date: 2024-01-23 20:11:23 +09:00
 author: Kyong
 categories: Daily
 banner:
@@ -13,7 +14,6 @@ banner:
   heading_style: "font-size: 4.25em; font-weight: bold; text-decoration: underline"
   subheading_style: "color: gold"
 tags: Daily
-top: 1
 sidebar: []
 ---
 [1. 첫번째 포스팅은 무엇을 작성해야 할까?](#첫번째-포스팅은-무엇을-작성해야-할까)
