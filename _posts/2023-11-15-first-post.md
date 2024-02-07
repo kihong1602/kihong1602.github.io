@@ -1,7 +1,6 @@
 ---
 layout: post
 title: 첫번째 포스팅!
-subtitle: 이 블로그엔 어떤 글이 올라갈 것인가..?
 date: 2024-01-23 20:11:23 +09:00
 author: Kyong
 categories: Daily
